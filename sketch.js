@@ -24,7 +24,10 @@ function setup() {
 
 function draw() {
   getInput();
-  player.update();
+
+  for (const entity of entities) {
+    entity.update();
+  }
 
   background(220);
 
@@ -52,4 +55,8 @@ function getInput() {
 
   input.mouse.x = mouseX;
   input.mouse.y = mouseY;
+}
+
+function mousePressed() {
+  player.onClick();
 }

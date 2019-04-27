@@ -18,4 +18,19 @@ class Player {
 
     pop();
   }
+
+  onClick() {
+    const direction = input.mouse
+      .copy()
+      .sub(this.pos);
+    const position = direction
+      .copy()
+      .setMag(16)
+      .add(this.pos);
+    const vel = direction
+      .copy()
+      .setMag(50);
+    const projectile = new Projectile(position, vel);
+    entities.push(projectile);
+  }
 }

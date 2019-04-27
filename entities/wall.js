@@ -1,5 +1,6 @@
-class Wall {
+class Wall extends Solid {
   constructor(top, left, bottom, right) {
+    super();
     this.top = top;
     this.left = left;
     this.bottom = bottom;

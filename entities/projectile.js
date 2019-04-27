@@ -1,5 +1,6 @@
-class Projectile {
+class Projectile extends Solid {
   constructor(level, sourceEntity, pos, vel) {
+    super();
     this.level = level;
     this.sourceEntity = sourceEntity;
     this.pos = pos;
@@ -10,6 +11,10 @@ class Projectile {
   }
 
   update() {
+    this.previousPositions.pop();
+    if (this.hasCollided && this.previousPositions.length === 0) {
+      this.level.removeEntity(this);
+    }
     if (this.hasCollided) return;
     this.previousPositions.push(this.pos.copy());
     const smallVel = this.vel.copy().mult(1 / Projectile.velInterpolation);
@@ -23,15 +28,13 @@ class Projectile {
 
   draw() {
     stroke(255);
-    let previous = this.previousPositions.shift();
+    let previous = this.previousPositions[0];
     line(this.pos.x, this.pos.y, previous.x, previous.y);
-    if (this.hasCollided && this.previousPositions.length === 0) {
-      this.level.removeEntity(this);
-    }
   }
 
   onCollide(other) {
     if (other === this.sourceEntity) return;
+    if (!(other instanceof Solid)) return;
     this.hasCollided = true;
     console.log('Projectile collision')
     return collisionResults.NONE;

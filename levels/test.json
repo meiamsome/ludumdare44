@@ -1,4 +1,12 @@
 {
+  "endZones": [
+    {
+      "top": 400,
+      "left": 400,
+      "bottom": 500,
+      "right": 500
+    }
+  ],
   "enemies": [
     {
       "x": 300,

@@ -19,6 +19,10 @@ class Level {
       this.addEntity(new Wall(top, left, bottom, right));
     }
 
+    for (const { top, left, bottom, right } of result.endZones) {
+      this.addEntity(new EndZone(this, top, left, bottom, right));
+    }
+
     for (const { x, y } of result.enemies) {
       this.addEntity(new Enemy(this, x, y));
     }
@@ -59,5 +63,11 @@ class Level {
 
   onClick() {
     this.player.onClick();
+  }
+
+  onKeyPress() {
+    for (const entity of this.entities) {
+      entity.onKeyPress && entity.onKeyPress();
+    }
   }
 }

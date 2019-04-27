@@ -21,7 +21,9 @@ class Gem {
       ui.collectGem(this);
       return collisionResults.DESTROY;
     }
-    return collisionResults.MOVE_OUT;
+    if (entity instanceof Solid) {
+      return collisionResults.MOVE_OUT;
+    }
   }
 
   onMoveOut(movement) {

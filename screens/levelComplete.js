@@ -1,5 +1,6 @@
-class PauseScreen {
-  constructor() {
+class LevelCompleteScreen {
+  constructor(timeRemaining) {
+    this.timeRemaining = timeRemaining;
     this.width = 1920;
     this.height = 1080;
   }
@@ -17,12 +18,6 @@ class PauseScreen {
     textSize(120);
     text("GAME NAME HERE", 0, -400);
     textSize(32);
-    text("PAUSED\nPress escape to resume", 0, 0);
-  }
-
-  onKeyPress() {
-    if (keyCode === ESCAPE) {
-      screen = null;
-    }
+    text(`You survived with ${this.timeRemaining}ms remaining`, 0, 0);
   }
 }

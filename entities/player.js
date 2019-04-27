@@ -1,5 +1,6 @@
-class Player {
+class Player extends Solid {
   constructor (level, x, y) {
+    super();
     this.level = level;
     this.pos = createVector(x, y);
     this.moveOutVector = createVector(0, 0);

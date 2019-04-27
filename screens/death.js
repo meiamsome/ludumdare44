@@ -1,4 +1,4 @@
-class PauseScreen {
+class DeathScreen {
   constructor() {
     this.width = 1920;
     this.height = 1080;
@@ -17,7 +17,7 @@ class PauseScreen {
     textSize(120);
     text("GAME NAME HERE", 0, -400);
     textSize(32);
-    text("PAUSED\nPress escape to resume", 0, 0);
+    text("You DIED.", 0, 0);
   }
 
   onKeyPress() {

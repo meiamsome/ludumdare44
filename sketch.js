@@ -48,6 +48,10 @@ function draw() {
   if (screen) {
     return scaleAndRenderScreen(screen);
   }
+  if (endTime < Date.now()) {
+    screen = new DeathScreen();
+    return;
+  }
   getInput();
 
   level && level.update();

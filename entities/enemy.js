@@ -1,5 +1,6 @@
-class Enemy {
+class Enemy extends Solid {
   constructor (level, x, y) {
+    super();
     this.level = level;
     this.pos = createVector(x, y);
     this.facing = 0;
@@ -30,17 +31,21 @@ class Enemy {
       return collisionResults.MOVE_OUT;
     }
     if (entity instanceof Projectile) {
+      this.deathDirection = entity.vel.copy();
       return collisionResults.DESTROY;
     }
   }
 
   onDestroy() {
-    for(let i = 0; i < random(10, 50); i ++) {
+    const count = random(10, 50);
+    for(let i = 0; i < count; i ++) {
       this.level.addEntity(new Gem(
         this.level,
         random([1, 1, 1, 1, 2, 2, 5]),
         this.pos.copy(),
-        p5.Vector.random2D().setMag(random(5))
+        p5.Vector.random2D()
+          .setMag(random(5))
+          .add(this.deathDirection.setMag(5))
       ))
     }
   }

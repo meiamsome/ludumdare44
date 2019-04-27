@@ -14,6 +14,6 @@ class UIGemDisplay {
     stroke(0, this.alpha * 255);
     fill(255, this.alpha * 255);
     textAlign(CENTER, CENTER);
-    text(`+${this.value}`, this.pos.x, this.pos.y);
+    text(`+${this.value}ms`, this.pos.x, this.pos.y);
   }
 }

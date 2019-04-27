@@ -3,6 +3,7 @@ class Player {
     this.level = level;
     this.pos = createVector(x, y);
     this.moveOutVector = createVector(0, 0);
+    this.mouseAngle = 0;
     this.collisionMask = new CollisionMask(CollisionMask.CIRCLE, this.pos, 16);
   }
 
@@ -11,13 +12,13 @@ class Player {
     this.pos.y += input.keys.y;
     this.pos.add(this.moveOutVector);
     this.moveOutVector.setMag(0);
+    this.mouseAngle = input.mouse.copy().sub(this.pos).heading();
   }
 
   draw() {
     push();
     translate(this.pos.x, this.pos.y);
-    const mouseAngle = input.mouse.copy().sub(this.pos).heading();
-    rotate(mouseAngle);
+    rotate(this.mouseAngle);
     circle(0, 0, 16);
     line(0, 0, 16, 0);
 

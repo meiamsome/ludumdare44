@@ -8,6 +8,7 @@ const keyCodes = {
   s: 83,
   w: 87,
 };
+let paused = false;
 
 let room;
 
@@ -30,11 +31,19 @@ async function setup() {
 function draw() {
   getInput();
 
-  room && room.update();
+  if (!paused) {
+    room && room.update();
+  }
 
   background(220);
 
   room && room.draw();
+}
+
+function keyPressed() {
+  if (keyCode === ESCAPE) {
+    paused = !paused;
+  }
 }
 
 function getInput() {
@@ -60,5 +69,7 @@ function getInput() {
 }
 
 function mousePressed() {
-  room && room.onClick();
+  if (!paused) {
+    room && room.onClick();
+  }
 }

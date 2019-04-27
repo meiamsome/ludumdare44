@@ -4,7 +4,7 @@ const collisionResults = {
   MOVE_OUT: Symbol('MOVE_OUT'),
 }
 
-function checkCollisions(entity) {
+function checkCollisions(entities, entity) {
   let result = collisionResults.NONE;
   for (let i = 0; i < entities.length; i++) {
     const other = entities[i];
@@ -31,7 +31,7 @@ function checkCollisions(entity) {
   return result;
 }
 
-function checkAllCollisions() {
+function checkAllCollisions(entities) {
   outer:
   for (let i = 0; i < entities.length; i++) {
     for (let j = i + 1; j < entities.length; j++) {

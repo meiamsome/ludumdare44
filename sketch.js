@@ -8,50 +8,33 @@ const keyCodes = {
   s: 83,
   w: 87,
 };
-let player;
-const entities = [];
-function removeEntity(entity) {
-  let index = entities.indexOf(entity);
-  if (index !== -1) {
-    entities.splice(index, 1);
-  }
-}
+
+let room;
 
 function createRoom() {
-  entities.push(new Wall(-16, -16, -1, width + 16));
-  entities.push(new Wall(-16, -16, height + 16, -1));
-  entities.push(new Wall(-16, width + 1, height + 16, width + 16));
-  entities.push(new Wall(height + 1, -16, height + 16, width + 16));
-  entities.push(new Wall(200, 200, 250, 250));
 
   entities.push(new Enemy(300, 300));
 }
 
-function setup() {
+async function setup() {
   createCanvas(400, 400);
   ellipseMode(CENTER);
 
   input.keys = createVector(0, 0);
   input.mouse = createVector(0, 0);
 
-  createRoom();
-  player = new Player();
-  entities.push(player);
+  room = await new Level('test');
+
 }
 
 function draw() {
   getInput();
 
-  for (const entity of entities) {
-    entity.update();
-  }
-  checkAllCollisions();
+  room && room.update();
 
   background(220);
 
-  for (const entity of entities) {
-    entity.draw()
-  }
+  room && room.draw();
 }
 
 function getInput() {
@@ -77,5 +60,5 @@ function getInput() {
 }
 
 function mousePressed() {
-  player.onClick();
+  room && room.onClick();
 }

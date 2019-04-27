@@ -1,5 +1,6 @@
 class Projectile {
-  constructor(sourceEntity, pos, vel) {
+  constructor(level, sourceEntity, pos, vel) {
+    this.level = level;
     this.sourceEntity = sourceEntity;
     this.pos = pos;
     this.vel = vel;
@@ -15,7 +16,7 @@ class Projectile {
     for (var i = 0; i < Projectile.velInterpolation; i++) {
       this.pos.add(smallVel);
 
-      checkCollisions(this);
+      this.level.checkCollisions(this);
       if (this.hasCollided) return;
     }
   }
@@ -26,7 +27,7 @@ class Projectile {
     line(this.pos.x, this.pos.y, previous.x, previous.y);
     pop();
     if (this.hasCollided && this.previousPositions.length === 0) {
-      removeEntity(this);
+      this.level.removeEntity(this);
     }
   }
 

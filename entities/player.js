@@ -1,6 +1,7 @@
 class Player {
-  constructor () {
-    this.pos = createVector(100, 100);
+  constructor (level, x, y) {
+    this.level = level;
+    this.pos = createVector(x, y);
     this.moveOutVector = createVector(0, 0);
     this.collisionMask = new CollisionMask(CollisionMask.CIRCLE, this.pos, 16);
   }
@@ -34,8 +35,8 @@ class Player {
     const vel = direction
       .copy()
       .setMag(50);
-    const projectile = new Projectile(this, position, vel);
-    entities.push(projectile);
+    const projectile = new Projectile(this.level, this, position, vel);
+    this.level.addEntity(projectile);
   }
 
   onCollide(entity) {

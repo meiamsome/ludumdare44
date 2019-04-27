@@ -169,3 +169,31 @@ CollisionChecks[CollisionMask.CIRCLE] = {
     );
   }
 };
+
+CollisionChecks[CollisionMask.RECTANGLE] = {
+  [CollisionMask.RECTANGLE]: (left, right) => {
+    if (
+      left.right <= right.left ||
+      left.left >= right.right ||
+      left.bottom <= right.top ||
+      left.top >= right.bottom
+    ) {
+      return null;
+    }
+
+    const correctionVectors = [
+      createVector(left.right - right.left, 0),
+      createVector(left.left - right.right, 0),
+      createVector(0, left.bottom - right.top),
+      createVector(0, left.top - right.bottom),
+    ]
+
+    correctionVectors.sort((a, b) => a.magSq() - b.magSq());
+
+    const moveRight = correctionVectors[0];
+    return {
+      moveLeft: moveRight.copy().mult(-1),
+      moveRight
+    }
+  }
+}

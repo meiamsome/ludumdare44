@@ -10,6 +10,8 @@ class Wall {
   update() {}
 
   draw() {
+    stroke(0);
+    fill(255);
     rect(this.left, this.top, this.right - this.left, this.bottom - this.top);
   }
 }

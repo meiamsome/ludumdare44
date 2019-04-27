@@ -19,6 +19,8 @@ class Player {
     push();
     translate(this.pos.x, this.pos.y);
     rotate(this.mouseAngle);
+    stroke(0);
+    fill(255);
     circle(0, 0, 16);
     line(0, 0, 16, 0);
 

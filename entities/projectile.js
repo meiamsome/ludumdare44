@@ -22,10 +22,9 @@ class Projectile {
   }
 
   draw() {
-    push();
+    stroke(255);
     let previous = this.previousPositions.shift();
     line(this.pos.x, this.pos.y, previous.x, previous.y);
-    pop();
     if (this.hasCollided && this.previousPositions.length === 0) {
       this.level.removeEntity(this);
     }

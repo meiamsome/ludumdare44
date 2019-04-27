@@ -8,41 +8,60 @@ const keyCodes = {
   s: 83,
   w: 87,
 };
-let paused = false;
 
-let room;
+let screen;
+let level;
 
-function createRoom() {
-
-  entities.push(new Enemy(300, 300));
+function moveToLevel(_level) {
+  level = _level;
+  screen = null;
 }
 
-async function setup() {
-  createCanvas(400, 400);
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+  background(0);
   ellipseMode(CENTER);
+
+  screen = new StartScreen();
 
   input.keys = createVector(0, 0);
   input.mouse = createVector(0, 0);
 
-  room = await new Level('test');
+  window.addEventListener('resize', () => {
+    resizeCanvas(windowWidth, windowHeight);
+  });
+}
 
+function scaleAndRenderScreen(screen) {
+  let screenScale = Math.min(width / screen.width, height / screen.height);
+  translate(width/2, height/2);
+  scale(screenScale);
+  screen.draw();
 }
 
 function draw() {
+  background(32);
+  if (screen) {
+    return scaleAndRenderScreen(screen);
+  }
   getInput();
 
-  if (!paused) {
-    room && room.update();
-  }
+  level && level.update();
 
-  background(220);
 
-  room && room.draw();
+  level && level.draw();
 }
 
 function keyPressed() {
-  if (keyCode === ESCAPE) {
-    paused = !paused;
+  if (keyCode === ESCAPE && !screen) {
+    screen = new PauseScreen();
+    return;
+  }
+  if (screen) {
+    return screen.onKeyPress && screen.onKeyPress();
+  }
+  if (level) {
+    return level.onKeyPress && level.onKeyPress();
   }
 }
 
@@ -62,14 +81,15 @@ function getInput() {
   if (keyIsDown(DOWN_ARROW) || keyIsDown(keyCodes["s"])) {
     input.keys.y += 1;
   }
-  input.keys.setMag(1)
+  input.keys.setMag(4)
 
   input.mouse.x = mouseX;
   input.mouse.y = mouseY;
 }
 
 function mousePressed() {
-  if (!paused) {
-    room && room.onClick();
+  if (screen) {
+    return screen.onClick && screen.onClick();
   }
+  level && level.onClick();
 }

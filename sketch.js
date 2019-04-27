@@ -10,6 +10,16 @@ const keyCodes = {
 };
 let player;
 const entities = [];
+function removeEntity(entity) {
+  let index = entities.indexOf(entity);
+  if (index !== -1) {
+    entities.splice(index, 1);
+  }
+}
+
+function createRoom() {
+  entities.push(new Wall(200, 200, 250, 250))
+}
 
 function setup() {
   createCanvas(400, 400);
@@ -18,6 +28,7 @@ function setup() {
   input.keys = createVector(0, 0);
   input.mouse = createVector(0, 0);
 
+  createRoom();
   player = new Player();
   entities.push(player);
 }
@@ -28,6 +39,7 @@ function draw() {
   for (const entity of entities) {
     entity.update();
   }
+  checkAllCollisions();
 
   background(220);
 

@@ -1,11 +1,15 @@
 class Player {
   constructor () {
     this.pos = createVector(100, 100);
+    this.moveOutVector = createVector(0, 0);
+    this.collisionMask = new CollisionMask(CollisionMask.CIRCLE, this.pos, 16);
   }
 
   update() {
     this.pos.x += input.keys.x;
     this.pos.y += input.keys.y;
+    this.pos.add(this.moveOutVector);
+    this.moveOutVector.setMag(0);
   }
 
   draw() {
@@ -25,12 +29,24 @@ class Player {
       .sub(this.pos);
     const position = direction
       .copy()
-      .setMag(16)
+      .setMag(32)
       .add(this.pos);
     const vel = direction
       .copy()
       .setMag(50);
-    const projectile = new Projectile(position, vel);
+    const projectile = new Projectile(this, position, vel);
     entities.push(projectile);
+  }
+
+  onCollide(entity) {
+    if (entity instanceof Wall) {
+      console.log("We're in a wall")
+      return collisionResults.MOVE_OUT;
+    }
+    console.log('Player collision');
+  }
+
+  onMoveOut(movement) {
+    this.moveOutVector.add(movement);
   }
 }

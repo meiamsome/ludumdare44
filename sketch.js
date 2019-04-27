@@ -51,6 +51,7 @@ function draw() {
   getInput();
 
   level && level.update();
+  ui.update();
 
 
   level && level.draw();

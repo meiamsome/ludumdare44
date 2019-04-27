@@ -14,14 +14,13 @@ class Level {
     this.addEntity(new Wall(-16, -16, this.height + 16, -1));
     this.addEntity(new Wall(-16, this.width + 1, this.height + 16, this.width + 16));
     this.addEntity(new Wall(this.height + 1, -16, this.height + 16, this.width + 16));
-    this.addEntity(new Wall(200, 200, 250, 250));
 
     for (const { top, left, bottom, right } of result.walls) {
       this.addEntity(new Wall(top, left, bottom, right));
     }
 
     for (const { x, y } of result.enemies) {
-      this.addEntity(new Enemy(x, y));
+      this.addEntity(new Enemy(this, x, y));
     }
 
     this.player = new Player(this, result.player.x, result.player.y);

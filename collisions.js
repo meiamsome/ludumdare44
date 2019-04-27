@@ -75,11 +75,11 @@ class CollisionMask {
   }
 
   calculateCollision(other) {
-    if (CollisionChecks[this._type] && CollisionChecks[this._type][other._type]) {
-      return CollisionChecks[this._type][other._type](this._mask, other._mask);
+    if (CollisionChecks[this._type.NAME] && CollisionChecks[this._type.NAME][other._type.NAME]) {
+      return CollisionChecks[this._type.NAME][other._type.NAME](this._mask, other._mask);
     }
-    if (CollisionChecks[other._type] && CollisionChecks[other._type][this._type]) {
-      const result = CollisionChecks[other._type][this._type](other._mask, this._mask);
+    if (CollisionChecks[other._type.NAME] && CollisionChecks[other._type.NAME][this._type.NAME]) {
+      const result = CollisionChecks[other._type.NAME][this._type.NAME](other._mask, this._mask);
       return result && {
         moveLeft: result.moveRight,
         moveRight: result.moveLeft,
@@ -88,6 +88,9 @@ class CollisionMask {
     throw new Error(`Cannot collide pair ${this._type.NAME} ${other._type.NAME}`)
   }
 }
+
+CollisionMask.NONE = class{};
+CollisionMask.NONE.NAME = "NONE";
 
 CollisionMask.CIRCLE = class {
   constructor(pos, radius) {
@@ -109,8 +112,8 @@ CollisionMask.RECTANGLE.NAME = "RECTANGLE";
 
 const CollisionChecks = {};
 
-CollisionChecks[CollisionMask.CIRCLE] = {
-  [CollisionMask.CIRCLE]: (left, right) => {
+CollisionChecks[CollisionMask.CIRCLE.NAME] = {
+  [CollisionMask.CIRCLE.NAME]: (left, right) => {
     const lToR = left.pos.copy().sub(right.pos);
     if (lToR.magSq() <= (left.radius + right.radius) * (left.radius + right.radius)) {
       const resolutionVector = lToR.copy().setMag(left.radius + right.radius - lToR.mag());
@@ -120,7 +123,7 @@ CollisionChecks[CollisionMask.CIRCLE] = {
       };
     }
   },
-  [CollisionMask.RECTANGLE]: (leftEntity, rightEntity) => {
+  [CollisionMask.RECTANGLE.NAME]: (leftEntity, rightEntity) => {
     const { pos: { x, y }, radius } = leftEntity;
     const { top, left, bottom, right } = rightEntity;
     if (y > top && y < bottom && x > left - radius && x < right + radius) {
@@ -150,19 +153,19 @@ CollisionChecks[CollisionMask.CIRCLE] = {
       }
     }
     return (
-      CollisionChecks[CollisionMask.CIRCLE][CollisionMask.CIRCLE](leftEntity, {
+      CollisionChecks[CollisionMask.CIRCLE.NAME][CollisionMask.CIRCLE.NAME](leftEntity, {
         radius: 0,
         pos: createVector(left, top),
       }) ||
-      CollisionChecks[CollisionMask.CIRCLE][CollisionMask.CIRCLE](leftEntity, {
+      CollisionChecks[CollisionMask.CIRCLE.NAME][CollisionMask.CIRCLE.NAME](leftEntity, {
         radius: 0,
         pos: createVector(right, top),
       }) ||
-      CollisionChecks[CollisionMask.CIRCLE][CollisionMask.CIRCLE](leftEntity, {
+      CollisionChecks[CollisionMask.CIRCLE.NAME][CollisionMask.CIRCLE.NAME](leftEntity, {
         radius: 0,
         pos: createVector(left, bottom),
       }) ||
-      CollisionChecks[CollisionMask.CIRCLE][CollisionMask.CIRCLE](leftEntity, {
+      CollisionChecks[CollisionMask.CIRCLE.NAME][CollisionMask.CIRCLE.NAME](leftEntity, {
         radius: 0,
         pos: createVector(right, bottom),
       })
@@ -170,8 +173,8 @@ CollisionChecks[CollisionMask.CIRCLE] = {
   }
 };
 
-CollisionChecks[CollisionMask.RECTANGLE] = {
-  [CollisionMask.RECTANGLE]: (left, right) => {
+CollisionChecks[CollisionMask.RECTANGLE.NAME] = {
+  [CollisionMask.RECTANGLE.NAME]: (left, right) => {
     if (
       left.right <= right.left ||
       left.left >= right.right ||
@@ -197,3 +200,7 @@ CollisionChecks[CollisionMask.RECTANGLE] = {
     }
   }
 }
+
+CollisionChecks[CollisionMask.NONE.NAME] = Object.values(CollisionMask)
+  .map(other => [other.NAME, () => null])
+  .reduce((obj, [k, v]) => (obj[k] = v, obj), {});

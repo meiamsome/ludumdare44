@@ -1,5 +1,6 @@
 class Enemy {
-  constructor (x, y) {
+  constructor (level, x, y) {
+    this.level = level;
     this.pos = createVector(x, y);
     this.facing = 0;
     this.moveOutVector = createVector(0, 0);
@@ -30,6 +31,17 @@ class Enemy {
     }
     if (entity instanceof Projectile) {
       return collisionResults.DESTROY;
+    }
+  }
+
+  onDestroy() {
+    for(let i = 0; i < random(10, 50); i ++) {
+      this.level.addEntity(new Gem(
+        this.level,
+        random([1, 1, 1, 1, 2, 2, 5]),
+        this.pos.copy(),
+        p5.Vector.random2D().setMag(random(5))
+      ))
     }
   }
 

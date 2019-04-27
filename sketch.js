@@ -70,6 +70,7 @@ function getInput() {
   if (keyIsDown(DOWN_ARROW) || keyIsDown(keyCodes["s"])) {
     input.keys.y += 1;
   }
+  input.keys.setMag(1)
 
   input.mouse.x = mouseX;
   input.mouse.y = mouseY;

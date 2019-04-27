@@ -1,13 +1,15 @@
 class Level {
   constructor(levelName) {
+    this.levelName = levelName;
     this.entities = [];
     this.gemsCollected = 0;
     this.gemCollectionTimeout = null;
+    this.highScore = +localStorage.getItem(`highscores.${this.levelName}`);
     return this._loadLevel(levelName);
   }
 
-  async _loadLevel(levelName) {
-    const request = await fetch(`levels/${levelName}.json`);
+  async _loadLevel() {
+    const request = await fetch(`levels/${this.levelName}.json`);
     this.data = await request.json();
     return this._loadFromData();
   }
@@ -95,7 +97,16 @@ class Level {
   }
 
   finish() {
-    screen = new LevelCompleteScreen(this.endTime - Date.now());
+    let score = this.endTime - Date.now();
+    let isHighScore = false;
+    if (!this.highScore || score > this.highScore) {
+      isHighScore = true;
+    }
+    screen = new LevelCompleteScreen(score, this.highScore);
+    if (isHighScore) {
+      localStorage.setItem(`highscores.${this.levelName}`, score);
+      this.highScore = score;
+    }
   }
 
   onClick() {

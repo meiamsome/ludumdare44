@@ -1,6 +1,7 @@
 class LevelCompleteScreen {
-  constructor(timeRemaining) {
+  constructor(timeRemaining, highScore) {
     this.timeRemaining = timeRemaining;
+    this.highScore = highScore;
     this.width = 1920;
     this.height = 1080;
   }
@@ -18,7 +19,13 @@ class LevelCompleteScreen {
     textSize(120);
     text("GAME NAME HERE", 0, -400);
     textSize(32);
-    text(`You survived with ${this.timeRemaining}ms remaining`, 0, 0);
+    if (!this.highScore) {
+      text(`You survived with ${this.timeRemaining}ms remaining.`, 0, 0);
+    } else if(this.highScore < this.timeRemaining) {
+      text(`You survived with ${this.timeRemaining}ms remaining.\nNew high score!\nYour previous high score was ${this.highScore}ms`, 0, 0);
+    } else {
+      text(`You survived with ${this.timeRemaining}ms remaining.\nYour high score is ${this.highScore}ms`, 0, 0);
+    }
   }
 
   onClick() {

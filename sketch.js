@@ -23,6 +23,8 @@ function createRoom() {
   entities.push(new Wall(-16, width + 1, height + 16, width + 16));
   entities.push(new Wall(height + 1, -16, height + 16, width + 16));
   entities.push(new Wall(200, 200, 250, 250));
+
+  entities.push(new Enemy(300, 300));
 }
 
 function setup() {

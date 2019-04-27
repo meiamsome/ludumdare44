@@ -37,7 +37,7 @@ class EndZone {
 
   onKeyPress() {
     if (key === 'e' && this.playerHere && this.readyToLeave) {
-      screen = new LevelCompleteScreen(endTime - Date.now());
+      this.level.finish();
     }
   }
 }

@@ -18,7 +18,7 @@ class Gem {
 
   onCollide(entity) {
     if (entity instanceof Player) {
-      ui.collectGem(this);
+      this.level.collectGem(this);
       return collisionResults.DESTROY;
     }
     if (entity instanceof Solid) {

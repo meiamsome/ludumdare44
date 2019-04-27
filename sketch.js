@@ -12,12 +12,11 @@ const keyCodes = {
 let screen;
 let level;
 let ui;
-let endTime;
 
 function moveToLevel(_level) {
   level = _level;
+  level.begin();
   screen = null;
-  endTime = Date.now() + 60 * 1000;
 }
 
 function setup() {
@@ -47,10 +46,6 @@ function draw() {
   background(32);
   if (screen) {
     return scaleAndRenderScreen(screen);
-  }
-  if (endTime < Date.now()) {
-    screen = new DeathScreen();
-    return;
   }
   getInput();
 

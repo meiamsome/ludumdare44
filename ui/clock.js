@@ -4,7 +4,7 @@ class UIClock {
     fill(255);
     textSize(40);
     textAlign(CENTER, TOP);
-    const timeToEnd = max(endTime - Date.now(), 0);
+    const timeToEnd = max(level.endTime - Date.now(), 0);
     const millis = timeToEnd % 1000;
     let next = (timeToEnd - millis) / 1000;
     const seconds = next % 60;

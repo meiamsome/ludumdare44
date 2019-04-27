@@ -5,6 +5,12 @@
       "left": 400,
       "bottom": 500,
       "right": 500
+    },
+    {
+      "top": 500,
+      "left": 500,
+      "bottom": 600,
+      "right": 600
     }
   ],
   "enemies": [
@@ -34,6 +40,7 @@
     "x": 100,
     "y": 100
   },
+  "randomSeed": 102390129,
   "walls": [
     {
       "top": 200,

@@ -20,4 +20,8 @@ class LevelCompleteScreen {
     textSize(32);
     text(`You survived with ${this.timeRemaining}ms remaining`, 0, 0);
   }
+
+  onClick() {
+    screen = new StartScreen('test');
+  }
 }

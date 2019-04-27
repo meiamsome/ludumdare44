@@ -11,10 +11,13 @@ const keyCodes = {
 
 let screen;
 let level;
+let ui;
+let endTime;
 
 function moveToLevel(_level) {
   level = _level;
   screen = null;
+  endTime = Date.now() + 60 * 1000;
 }
 
 function setup() {
@@ -23,6 +26,7 @@ function setup() {
   ellipseMode(CENTER);
 
   screen = new StartScreen();
+  ui = new UI();
 
   input.keys = createVector(0, 0);
   input.mouse = createVector(0, 0);
@@ -50,6 +54,7 @@ function draw() {
 
 
   level && level.draw();
+  ui.draw();
 }
 
 function keyPressed() {

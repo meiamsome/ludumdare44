@@ -1,33 +1,21 @@
-class StartScreen {
+class StartScreen extends MenuScreen {
   constructor() {
-    this.width = 1920;
-    this.height = 1080;
+    super()
     this.level = null;
     this._loadLevel();
+    this.options = [
+      {
+        name: 'Play the only level',
+        onClick: () => this.onPlayClick(),
+      }
+    ]
   }
 
   async _loadLevel() {
     this.level = await new Level('test');
   }
 
-  draw() {
-    // stroke(255, 0, 0);
-    // fill(0);
-    // rect(-this.width/2, -this.height/2, this.width, this.height);
-    textAlign(CENTER, CENTER);
-    fill(255);
-    stroke(255);
-    textSize(120);
-    text("GAME NAME HERE", 0, -400);
-    textSize(32);
-    if (this.level) {
-      text("Click to start", 0, 0);
-    } else {
-      text("Loading...", 0, 0);
-    }
-  }
-
-  onClick() {
+  onPlayClick() {
     if (this.level) {
       moveToLevel(this.level);
     }

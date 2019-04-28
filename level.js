@@ -100,6 +100,7 @@ class Level {
   }
 
   update(duration) {
+    cursor('none');
     this.raysPerFrame = 0;
     if (this.endTime < Date.now() && !(screen instanceof DeathScreen)) {
       if (!this.player.dead) {

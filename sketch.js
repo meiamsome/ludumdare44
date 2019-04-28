@@ -36,10 +36,14 @@ function setup() {
 }
 
 function scaleAndRenderScreen(screen) {
+  const mouseCache = input.mouse.copy();
   let screenScale = Math.min(width / screen.width, height / screen.height);
   translate(width/2, height/2);
   scale(screenScale);
+  input.mouse.sub(width/2, height/2).div(screenScale);
   screen.draw();
+  resetMatrix();
+  input.mouse = mouseCache;
 }
 
 let last = null;
@@ -50,11 +54,11 @@ function draw() {
     duration = now - last;
   }
   last = Date.now();
+  getInput();
   if (screen) {
     background(32);
     return scaleAndRenderScreen(screen);
   }
-  getInput();
 
   if (level) {
     const offset = createVector(width / 2, height / 2).sub(level.offset);

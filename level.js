@@ -8,6 +8,7 @@ const wallTypes = {
 
 class Level {
   constructor(levelName) {
+    // this.debug = true;
     this.levelName = levelName;
     this.entities = [];
     this.raysPerFrame = 0;
@@ -96,13 +97,21 @@ class Level {
     return checkCollisions(this.entities, entity);
   }
 
-  update() {
+  update(duration) {
+    this.raysPerFrame = 0;
     if (this.endTime < Date.now() && !(screen instanceof DeathScreen)) {
+      if (!this.player.dead) {
+        this.player.dead = true;
+        this.player.onDestroy();
+        this.removeEntity(this.player);
+      }
       screen = new DeathScreen();
       return;
     }
     for (const entity of this.entities) {
-      entity.update();
+      if (entity.update) {
+        entity.update(duration);
+      }
     }
     checkAllCollisions(this.entities);
   }
@@ -144,7 +153,7 @@ class Level {
       seen,
     } = adaptiveTrace(this.player.pos, this.player.mouseAngle - angle, this.player.mouseAngle + angle, playerSearchIncludes, playerSearchExcludes);
 
-    // return;
+    if (this.debug) return;
     if (this.player.dead) return;
 
     drawingContext.globalCompositeOperation = "destination-in";
@@ -159,7 +168,6 @@ class Level {
     endShape();
     drawingContext.filter = 'none';
     blendMode(BLEND);
-    this.raysPerFrame = rays.length;
 
     for (const entity of this.entities) {
       if ([Wall, Glass].some(clss => entity instanceof clss)) {

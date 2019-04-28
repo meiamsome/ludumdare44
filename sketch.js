@@ -42,14 +42,21 @@ function scaleAndRenderScreen(screen) {
   screen.draw();
 }
 
+let last = null;
 function draw() {
+  let duration = 0;
+  let now = Date.now();
+  if (last) {
+    duration = now - last;
+  }
+  last = Date.now();
   background(32);
   if (screen) {
     return scaleAndRenderScreen(screen);
   }
   getInput();
 
-  level && level.update();
+  level && level.update(duration);
   ui.update();
 
 
@@ -86,7 +93,7 @@ function getInput() {
   if (keyIsDown(DOWN_ARROW) || keyIsDown(keyCodes["s"])) {
     input.keys.y += 1;
   }
-  input.keys.setMag(4)
+  input.keys.setMag(240)
 
   input.mouse.x = mouseX;
   input.mouse.y = mouseY;

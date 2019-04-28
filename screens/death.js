@@ -2,10 +2,14 @@ class DeathScreen {
   constructor() {
     this.width = 1920;
     this.height = 1080;
+    this.lastUpdate = Date.now();
   }
 
   draw() {
-    level.update();
+    let time = Date.now();
+    let deltaT = time - this.lastUpdate;
+    this.lastUpdate = time;
+    level.update(deltaT);
     push();
     resetMatrix();
     level.draw();

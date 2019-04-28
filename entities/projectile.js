@@ -10,19 +10,19 @@ class Projectile extends Solid {
     this.previousPositions = Array.from({ length: 1 }, () => this.pos.copy());
   }
 
-  update() {
+  update(deltaT) {
     this.previousPositions.pop();
     if (this.hasCollided && this.previousPositions.length === 0) {
       this.level.removeEntity(this);
     }
     if (this.hasCollided) return;
     this.previousPositions.push(this.pos.copy());
-    const result = traceRay(this.pos, this.vel, [Solid], [this.sourceEntityClass], this.vel.mag());
+    const result = traceRay(this.pos, this.vel, [Solid], [this.sourceEntityClass], this.vel.mag() * deltaT / 1000);
     if (result) {
       const { distance } = result;
       this.pos.add(this.vel.copy().setMag(distance + 0.01));
     } else {
-      this.pos.add(this.vel);
+      this.pos.add(this.vel.copy().mult(deltaT / 1000));
     }
   }
 

@@ -33,9 +33,9 @@ class Gem {
     this.vel.sub(movement.mult(this.vel.dot(movement)).mult(2));
   }
 
-  update() {
+  update(deltaT) {
     // this.pos.add(this.vel);
-    let mag = this.vel.mag();
+    let mag = this.vel.mag() * deltaT / 1000;
     while (mag > 0.1) {
       const result = traceRay(this.pos, this.vel, gemCollisionIncludes, gemCollisionExcludes, mag);
       if (result) {
@@ -51,7 +51,7 @@ class Gem {
         }
         mag -= distance;
       } else {
-        this.pos.add(this.vel);
+        this.pos.add(this.vel.copy().setMag(mag));
         mag = 0;
       }
     }
@@ -63,7 +63,7 @@ class Gem {
     if (!this.level.player.dead) {
       const toPlayer = this.level.player.pos.copy().sub(this.pos);
       toPlayer.setMag(max(0, 200 - toPlayer.mag()) / 200);
-      this.vel.add(toPlayer.mult(3));
+      this.vel.add(toPlayer.mult(18 * deltaT));
     }
   }
 

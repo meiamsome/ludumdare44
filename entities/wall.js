@@ -8,8 +8,6 @@ class Wall extends OpaqueSolid {
     this.collisionMask = new CollisionMask(CollisionMask.RECTANGLE, top, left, bottom, right);
   }
 
-  update() {}
-
   draw() {
     stroke(0);
     fill(255);

@@ -1,8 +1,5 @@
 function _checkMatchFunction(clss, entity) {
-  try {
-    if (entity instanceof clss) return true;
-  } catch(e) {}
-  return entity === clss;
+  return entity instanceof clss;
 }
 
 let memoizeHits = 0;
@@ -33,6 +30,7 @@ function memoize(fn, changes) {
 }
 
 function traceRay(pos, direction, include=[OpaqueSolid], ignore=[], maxDistance=4096, maxSteps=10, minSteps=10) {
+  level.raysPerFrame ++;
   const startPos = pos.copy();
   const middlePos = direction.copy().setMag(maxDistance).add(pos);
   const endPos = middlePos.copy();

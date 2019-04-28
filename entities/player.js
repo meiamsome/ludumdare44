@@ -7,13 +7,15 @@ class Player extends OpaqueSolid {
     this.moveOutVector = createVector(0, 0);
     this.mouseAngle = 0;
     this.collisionMask = new CollisionMask(CollisionMask.CIRCLE, this.pos, 16);
+    this.deathDirection = createVector(0, 0);
   }
 
-  update() {
+  update(deltaT) {
     this.pos.add(this.moveOutVector);
     this.moveOutVector.setMag(0);
-    this.pos.x += input.keys.x;
-    this.pos.y += input.keys.y;
+    let vec = input.keys.copy().mult(deltaT / 1000);
+    this.pos.x += vec.x;
+    this.pos.y += vec.y;
     for (let i = 0; i < 5; i++) {
       const {
         moveOuts,
@@ -51,7 +53,7 @@ class Player extends OpaqueSolid {
       .add(this.pos);
     const vel = direction
       .copy()
-      .setMag(50);
+      .setMag(2500);
     const projectile = new Projectile(this.level, Player, position, vel);
     this.level.addEntity(projectile);
   }
@@ -87,7 +89,7 @@ class Player extends OpaqueSolid {
         value,
         this.pos.copy(),
         p5.Vector.random2D()
-          .setMag(random(3, 5))
+          .setMag(random(180, 300))
           .add(this.deathDirection),
         random(0.5, 0.9)
       ))

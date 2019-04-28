@@ -9,8 +9,6 @@ class Glass extends TransparentSolid {
     this.collisionMask = new CollisionMask(CollisionMask.RECTANGLE, top, left, bottom, right);
   }
 
-  update() {}
-
   draw() {
     strokeWeight(5);
     stroke(255);

@@ -1,28 +1,44 @@
+const enemyBehaviourReturns = {
+  DONE_STEP: Symbol('EBR: Done step'),
+  GET_DELTA_T: Symbol('EBR: Get delta time'),
+}
+
 const EPBWait = function* (enemy, time) {
-  let endTime = Date.now() + time;
-  while (Date.now() < endTime) yield;
-};
-
-const EPBMoveTo = function* (enemy, position) {
-  let dirVector = position.copy().sub(enemy.pos).setMag(4);
-  while ((position.x - enemy.pos.x) ** 2 + (position.y - enemy.pos.y) ** 2 > 4 ** 2) {
-    dirVector = position.copy().sub(enemy.pos).setMag(4);
-    yield* EPBLookAt(enemy, position);
-    yield enemy.pos.add(dirVector);
+  while (time > 0) {
+    time -= yield enemyBehaviourReturns.GET_DELTA_T;
+    yield enemyBehaviourReturns.DONE_STEP;
   }
-  yield enemy.pos.set(position);
 };
 
+const maxMoveSpeed = 120;
+const EPBMoveTo = function* (enemy, position) {
+  let timeDelta = (yield enemyBehaviourReturns.GET_DELTA_T) / 1000;
+  let dirVector = position.copy().sub(enemy.pos);
+  while (dirVector.magSq() > (maxMoveSpeed * timeDelta) ** 2) {
+    enemy.pos.add(dirVector.setMag(maxMoveSpeed * timeDelta));
+    yield enemyBehaviourReturns.DONE_STEP;
+    yield* EPBLookAt(enemy, position);
+    dirVector = position.copy().sub(enemy.pos);
+    timeDelta = (yield enemyBehaviourReturns.GET_DELTA_T) / 1000;
+  }
+  enemy.pos.set(position);
+  yield enemyBehaviourReturns.DONE_STEP;
+};
+
+const maxAngleDelta = 2 * Math.PI;
 const EPBFace = function* (enemy, angle) {
   let delta = angle - enemy.facing;
   if (abs(delta) > PI) delta = PI - delta;
-  while (abs(delta) % TWO_PI > PI/256) {
-    enemy.facing = (enemy.facing + constrain(delta, -PI/256, PI/256)) % TWO_PI;
-    yield;
+  let timeDelta = (yield enemyBehaviourReturns.GET_DELTA_T) / 1000;
+  while (abs(delta) % TWO_PI > maxAngleDelta * timeDelta) {
+    enemy.facing = (enemy.facing + constrain(delta, -maxAngleDelta * timeDelta, maxAngleDelta * timeDelta)) % TWO_PI;
+    yield enemyBehaviourReturns.DONE_STEP;
     delta = angle - enemy.facing;
     if (abs(delta) > PI) delta = PI - delta;
+    deltaT = (yield enemyBehaviourReturns.GET_DELTA_T) / 1000;
   }
   enemy.facing = angle % TWO_PI;
+  yield enemyBehaviourReturns.DONE_STEP;
 };
 
 const EPBLookAt = function* (enemy, position) {
@@ -30,14 +46,17 @@ const EPBLookAt = function* (enemy, position) {
   let angle = mkAngle();
   let delta = angle - enemy.facing;
   if (abs(delta) > PI) delta = PI - delta;
-  while (abs(enemy.facing - angle) % TWO_PI > PI/256) {
-    enemy.facing = (enemy.facing + constrain(delta, -PI/256, PI/256)) % TWO_PI;
-    yield;
+  let timeDelta = (yield enemyBehaviourReturns.GET_DELTA_T) / 1000;
+  while (abs(enemy.facing - angle) % TWO_PI > maxAngleDelta * timeDelta) {
+    enemy.facing = (enemy.facing + constrain(delta, -maxAngleDelta * timeDelta, maxAngleDelta * timeDelta)) % TWO_PI;
+    yield enemyBehaviourReturns.DONE_STEP;
     angle = mkAngle();
     delta = angle - enemy.facing;
     if (abs(delta) > PI) delta = PI - delta;
+    deltaT = (yield enemyBehaviourReturns.GET_DELTA_T) / 1000;
   }
   enemy.facing = angle % TWO_PI;
+  yield enemyBehaviourReturns.DONE_STEP;
 };
 
 
@@ -66,15 +85,46 @@ const EnemyPassiveBehaviourPatrol = points => function* (enemy) {
 }
 
 const EPBAttack = () => function* (enemy) {
+  let lookAt = EPBLookAt(enemy, enemy.lastSawPlayerAt);
   while (true) {
-    let wait = EPBLookAt(enemy, enemy.lastSawPlayerAt);
-    for (const _ of EPBWait(enemy, 500)) {
-      const { done } = wait.next();
-      yield;
-      if (done) wait = EPBLookAt(enemy, enemy.lastSawPlayerAt);
+    let delay = EPBWait(enemy, 500);
+    let done = false;
+    let value;
+    let deltaT;
+
+    waitLoop:
+    while (true) {
+      deltaT = yield enemyBehaviourReturns.GET_DELTA_T;
+      secondLoop:
+      while (true) {
+        ({ done, value } = delay.next(deltaT));
+        if (done) {
+          break waitLoop;
+        }
+        switch (value) {
+          case enemyBehaviourReturns.DONE_STEP:
+          break secondLoop;
+        }
+      }
+
+      lookAtLoop:
+      while (true) {
+        ({ done, value } = lookAt.next(deltaT));
+        if (done) {
+          lookAt = EPBLookAt(enemy, enemy.lastSawPlayerAt);
+          continue;
+        }
+        switch (value) {
+          case enemyBehaviourReturns.DONE_STEP:
+            break lookAtLoop;
+        }
+      }
+
+      yield enemyBehaviourReturns.DONE_STEP;
     }
-    yield* EPBLookAt(enemy, enemy.lastSawPlayerAt);
-    yield enemy.shoot();
+    yield* lookAt;
+    enemy.shoot();
+    yield enemyBehaviourReturns.DONE_STEP;
   }
 }
 
@@ -103,7 +153,7 @@ class Enemy extends OpaqueSolid {
     return new Type();
   }
 
-  update() {
+  update(deltaT) {
     // this.pos.x += input.keys.x;
     // this.pos.y += input.keys.y;
     this.pos.add(this.moveOutVector);
@@ -126,27 +176,39 @@ class Enemy extends OpaqueSolid {
       }
     }
 
-    if (!this.alert) {
-      this.currentBehaviour.next();
-    } else {
+    let behaviour = this.currentBehaviour;
+    if (this.alert) {
       if (seesPlayer) {
-        this.activeVisibleBehaviour.next();
+        behaviour = this.activeVisibleBehaviour;
       } else {
-        this.activeNotVisibleBehaviour.next();
+        behaviour = this.activeNotVisibleBehaviour;
+      }
+    }
+    outer:
+    while (true) {
+      let { value } = behaviour.next(deltaT);
+      switch(value) {
+        case enemyBehaviourReturns.DONE_STEP:
+          break outer;
+        case enemyBehaviourReturns.GET_DELTA_T:
+          continue;
+        default:
+          throw new Error('Invalid yield from enemy behaviour')
       }
     }
   }
 
   draw() {
-
-    // noStroke()
-    // fill(255, 100);
-    // beginShape();
-    // vertex(this.pos.x, this.pos.y);
-    // for (const { position } of this.rays) {
-    //   vertex(position.x, position.y);
-    // }
-    // endShape();
+    if (this.level.debug) {
+      noStroke()
+      fill(255, 100);
+      beginShape();
+      vertex(this.pos.x, this.pos.y);
+      for (const { position } of this.rays) {
+        vertex(position.x, position.y);
+      }
+      endShape();
+    }
 
     push();
     translate(this.pos.x, this.pos.y);
@@ -171,7 +233,7 @@ class Enemy extends OpaqueSolid {
       .add(this.pos);
     const vel = direction
       .copy()
-      .setMag(50);
+      .setMag(2500);
     const projectile = new Projectile(this.level, this.type, position, vel);
     this.level.addEntity(projectile);
   }
@@ -196,7 +258,7 @@ class Enemy extends OpaqueSolid {
         random([1, 1, 1, 1, 2, 2, 5]),
         this.pos.copy(),
         p5.Vector.random2D()
-          .setMag(random(3, 5))
+          .setMag(random(180, 300))
           .add(this.deathDirection),
         random(0.5, 0.9)
       ))

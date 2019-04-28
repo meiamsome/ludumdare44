@@ -8,7 +8,7 @@ const wallTypes = {
 
 class Level {
   constructor(levelName) {
-    this.debug = false;
+    // this.debug = true;
     this.levelName = levelName;
     this.entities = [];
     this.raysPerFrame = 0;
@@ -53,11 +53,12 @@ class Level {
       );
     }
 
-    for (const { mode, patrolId, startAt, _facing, _x, _y } of this.data.enemies) {
+    for (const { angleDelta: _angleDelta, mode, patrolId, startAt, facing: _facing, x: _x, y: _y } of this.data.enemies) {
       let x = _x;
       let y = _y;
-      let facing = _facing;
-      let passiveBehaviour = EnemyPassiveBehaviourStandAndLook()
+      let facing = _facing * PI / 180;
+      let angleDelta = _angleDelta * PI / 180;
+      let passiveBehaviour = null;
       if (mode === "patrol") {
         const patrol = this.patrols[patrolId].slice();
         if (startAt) {
@@ -74,6 +75,9 @@ class Level {
         }
       }
       let pos = createVector(x, y);
+      if (mode === "lookAround") {
+        passiveBehaviour = EnemyPassiveBehaviourStandAndLook(pos, facing, angleDelta);
+      }
       this.addEntity(new Enemy(this, pos, facing, passiveBehaviour));
     }
 

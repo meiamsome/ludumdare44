@@ -1,0 +1,141 @@
+{
+  "endZones": [
+    {
+      "top": 400,
+      "left": 400,
+      "bottom": 600,
+      "right": 600
+    }
+  ],
+  "enemies": [
+    {
+      "mode": "patrol",
+      "patrolId": 0,
+      "startAt": 0
+    },
+    {
+      "mode": "patrol",
+      "patrolId": 0,
+      "startAt": 2
+    },
+    {
+      "mode": "lookAround",
+      "x": 300,
+      "y": 300,
+      "facing": 45,
+      "angleDelta": 45
+    },
+    {
+      "mode": "lookAround",
+      "x": 700,
+      "y": 300,
+      "facing": 135,
+      "angleDelta": 45
+    },
+    {
+      "mode": "lookAround",
+      "x": 300,
+      "y": 700,
+      "facing": 315,
+      "angleDelta": 45
+    },
+    {
+      "mode": "lookAround",
+      "x": 700,
+      "y": 700,
+      "facing": 225,
+      "angleDelta": 45
+    }
+  ],
+  "height": 1080,
+  "patrols": [
+    [
+      {
+        "x": 400,
+        "y": 400
+      },
+      {
+        "x": 600,
+        "y": 400
+      },
+      {
+        "x": 600,
+        "y": 600
+      },
+      {
+        "x": 400,
+        "y": 600
+      }
+    ]
+  ],
+  "player": {
+    "x": 150,
+    "y": 150
+  },
+  "randomSeed": 102390129,
+  "walls": [
+    {
+      "type": "GLASS",
+      "top": 200,
+      "left": 400,
+      "bottom": 250,
+      "right": 600
+    },
+    {
+      "type": "GLASS",
+      "top": 750,
+      "left": 400,
+      "bottom": 800,
+      "right": 600
+    },
+    {
+      "top": 200,
+      "left": 200,
+      "bottom": 250,
+      "right": 400
+    },
+    {
+      "top": 200,
+      "left": 600,
+      "bottom": 250,
+      "right": 800
+    },
+    {
+      "top": 750,
+      "left": 200,
+      "bottom": 800,
+      "right": 400
+    },
+    {
+      "top": 750,
+      "left": 600,
+      "bottom": 800,
+      "right": 800
+    },
+    {
+      "top": 200,
+      "left": 200,
+      "bottom": 400,
+      "right": 250
+    },
+    {
+      "top": 600,
+      "left": 200,
+      "bottom": 800,
+      "right": 250
+    },
+    {
+      "top": 200,
+      "left": 750,
+      "bottom": 400,
+      "right": 800
+    },
+    {
+      "top": 600,
+      "left": 750,
+      "bottom": 800,
+      "right": 800
+    }
+  ],
+  "width": 1000
+}

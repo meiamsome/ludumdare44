@@ -12,7 +12,7 @@ class StartScreen extends MenuScreen {
   }
 
   async _loadLevel() {
-    this.level = await new Level('test');
+    this.level = await new Level('compound');
   }
 
   onPlayClick() {

@@ -46,6 +46,19 @@
       "top": 200,
       "left": 200,
       "bottom": 250,
+      "right": 400
+    },
+    {
+      "type": "GLASS",
+      "top": 200,
+      "left": 400,
+      "bottom": 250,
+      "right": 500
+    },
+    {
+      "top": 200,
+      "left": 500,
+      "bottom": 250,
       "right": 800
     }
   ],

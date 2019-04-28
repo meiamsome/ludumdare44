@@ -1,4 +1,4 @@
-class Wall extends OpaqueSolid {
+class Glass extends TransparentSolid {
   constructor(top, left, bottom, right) {
     super();
     this.top = top;
@@ -11,8 +11,10 @@ class Wall extends OpaqueSolid {
   update() {}
 
   draw() {
-    stroke(0);
-    fill(255);
-    rect(this.left, this.top, this.right - this.left, this.bottom - this.top);
+    strokeWeight(5);
+    stroke(255);
+    fill(255, 0.3);
+    rect(this.left + 3, this.top + 3, this.right - this.left - 6, this.bottom - this.top - 6);
+    strokeWeight(1);
   }
 }

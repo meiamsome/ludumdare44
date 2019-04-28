@@ -5,13 +5,16 @@ const collisionResults = {
 }
 
 function checkCollisions(entities, entity) {
+  let totalMoveOut = createVector(0, 0);
+  let moveOuts = 0;
   let result = collisionResults.NONE;
   for (let i = 0; i < entities.length; i++) {
     const other = entities[i];
     if (entity === other) {
       continue;
     }
-    if (entity.collisionMask.calculateCollision(other.collisionMask)) {
+    const collisionResult = entity.collisionMask.calculateCollision(other.collisionMask);
+    if (collisionResult) {
       let leftResult = entity.onCollide && entity.onCollide(other);
       let rightResult = other.onCollide && other.onCollide(entity);
       if (leftResult === collisionResults.DESTROY) {
@@ -22,13 +25,25 @@ function checkCollisions(entities, entity) {
         entities.splice(i, 1);
         i--;
       }
+      if (leftResult === collisionResults.MOVE_OUT) {
+        totalMoveOut.add(collisionResult.moveLeft);
+        moveOuts++;
+        if (result !== collisionResults.DESTROY) {
+          result = collisionResults.MOVE_OUT;
+        }
+      }
     }
   }
   if (result === collisionResults.DESTROY) {
     entity.onDestroy && entity.onDestroy();
     removeEntity(entity);
+    return collisionResults.DESTROY;
   }
-  return result;
+  return {
+    type: result,
+    moveOuts,
+    totalMoveOut,
+  };
 }
 
 function checkAllCollisions(entities) {
@@ -139,9 +154,9 @@ CollisionChecks[CollisionMask.LINE.NAME] = {
     const denominator = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
     if (abs(denominator) < 0.01) return;
     const tNumerator = (x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4);
-    if (tNumerator < 0 || tNumerator > denominator) return;
+    if (Math.sign(tNumerator) !== Math.sign(denominator) || abs(tNumerator) > abs(denominator)) return;
     const uNumerator = - ((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3));
-    if (uNumerator < 0 || uNumerator > denominator) return;
+    if (Math.sign(uNumerator) !== Math.sign(denominator) || abs(uNumerator) > abs(denominator)) return;
     return {
       // TODO
     };
@@ -228,19 +243,19 @@ CollisionChecks[CollisionMask.CIRCLE.NAME] = {
     return (
       CollisionChecks[CollisionMask.CIRCLE.NAME][CollisionMask.CIRCLE.NAME](leftEntity, {
         radius: 0,
-        pos: createVector(left, top),
+        pos: createVector(left + 1, top + 1),
       }) ||
       CollisionChecks[CollisionMask.CIRCLE.NAME][CollisionMask.CIRCLE.NAME](leftEntity, {
         radius: 0,
-        pos: createVector(right, top),
+        pos: createVector(right - 1, top + 1),
       }) ||
       CollisionChecks[CollisionMask.CIRCLE.NAME][CollisionMask.CIRCLE.NAME](leftEntity, {
         radius: 0,
-        pos: createVector(left, bottom),
+        pos: createVector(left + 1, bottom - 1),
       }) ||
       CollisionChecks[CollisionMask.CIRCLE.NAME][CollisionMask.CIRCLE.NAME](leftEntity, {
         radius: 0,
-        pos: createVector(right, bottom),
+        pos: createVector(right - 1, bottom - 1),
       })
     );
   }

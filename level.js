@@ -1,5 +1,10 @@
-const playerSearchIncludes = [Solid];
+const playerSearchIncludes = [OpaqueSolid];
 const playerSearchExcludes = [Player];
+
+const wallTypes = {
+  GLASS: Glass,
+  WALL: Wall,
+}
 
 class Level {
   constructor(levelName) {
@@ -28,8 +33,9 @@ class Level {
     this.addEntity(new Wall(-16, this.width + 1, this.height + 16, this.width + 16));
     this.addEntity(new Wall(this.height + 1, -16, this.height + 16, this.width + 16));
 
-    for (const { top, left, bottom, right } of this.data.walls) {
-      this.addEntity(new Wall(top, left, bottom, right));
+    for (const { type, top, left, bottom, right } of this.data.walls) {
+      const Type = wallTypes[type] || Wall;
+      this.addEntity(new Type(top, left, bottom, right));
     }
 
     for (const { top, left, bottom, right } of this.data.endZones) {
@@ -120,6 +126,11 @@ class Level {
     blendMode(BLEND);
     this.raysPerFrame = rays.length;
 
+    for (const entity of this.entities) {
+      if ([Wall, Glass, EndZone].some(clss => entity instanceof clss)) {
+        entity.draw();
+      }
+    }
     for (const visible of seen.values()) {
       visible.draw();
     }

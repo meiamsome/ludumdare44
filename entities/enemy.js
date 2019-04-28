@@ -1,4 +1,4 @@
-class Enemy extends Solid {
+class Enemy extends OpaqueSolid {
   constructor (level, x, y) {
     super();
     this.level = level;

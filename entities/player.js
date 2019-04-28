@@ -1,4 +1,4 @@
-class Player extends Solid {
+class Player extends OpaqueSolid {
   constructor (level, x, y) {
     super();
     this.level = level;
@@ -9,9 +9,21 @@ class Player extends Solid {
   }
 
   update() {
+    this.pos.add(this.moveOutVector);
+    this.moveOutVector.setMag(0);
     this.pos.x += input.keys.x;
     this.pos.y += input.keys.y;
-    this.pos.add(this.moveOutVector);
+    for (let i = 0; i < 5; i++) {
+      const {
+        moveOuts,
+        totalMoveOut,
+        type,
+      } = this.level.checkCollisions(this);
+      if (type !== collisionResults.MOVE_OUT) {
+        break;
+      }
+      this.pos.add(totalMoveOut.div(moveOuts));
+    }
     this.moveOutVector.setMag(0);
     this.mouseAngle = input.mouse.copy().sub(this.pos).heading();
   }
@@ -34,23 +46,32 @@ class Player extends Solid {
       .sub(this.pos);
     const position = direction
       .copy()
-      .setMag(32)
+      .setMag(16)
       .add(this.pos);
     const vel = direction
       .copy()
       .setMag(50);
-    const projectile = new Projectile(this.level, this, position, vel);
+    const projectile = new Projectile(this.level, Player, position, vel);
     this.level.addEntity(projectile);
   }
 
   onCollide(entity) {
-    if (entity instanceof Wall) {
+    if (entity instanceof Wall || entity instanceof Glass) {
       console.log("We're in a wall")
       return collisionResults.MOVE_OUT;
+    }
+    if (entity instanceof Projectile) {
+      if (entity.sourceEntityClass !== Player) {
+        this.level.endTime -= 100000;
+      }
     }
   }
 
   onMoveOut(movement) {
     this.moveOutVector.add(movement);
+  }
+
+  onDestroy() {
+
   }
 }

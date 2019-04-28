@@ -1,8 +1,8 @@
 class Projectile extends Solid {
-  constructor(level, sourceEntity, pos, vel) {
+  constructor(level, sourceEntityClass, pos, vel) {
     super();
     this.level = level;
-    this.sourceEntity = sourceEntity;
+    this.sourceEntityClass = sourceEntityClass;
     this.pos = pos;
     this.vel = vel;
     this.collisionMask = new CollisionMask(CollisionMask.CIRCLE, pos, 0);
@@ -17,7 +17,7 @@ class Projectile extends Solid {
     }
     if (this.hasCollided) return;
     this.previousPositions.push(this.pos.copy());
-    const result = traceRay(this.pos, this.vel, [Solid], [], this.vel.mag());
+    const result = traceRay(this.pos, this.vel, [Solid], [this.sourceEntityClass], this.vel.mag());
     if (result) {
       const { distance } = result;
       this.pos.add(this.vel.copy().setMag(distance + 0.01));
@@ -33,7 +33,7 @@ class Projectile extends Solid {
   }
 
   onCollide(other) {
-    if (other === this.sourceEntity) return;
+    if (other instanceof this.sourceEntityClass) return;
     if (!(other instanceof Solid)) return;
     this.hasCollided = true;
     console.log('Projectile collision')

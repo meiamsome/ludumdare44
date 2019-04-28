@@ -29,7 +29,7 @@ function memoize(fn, changes) {
   return cache.value;
 }
 
-function traceRay(pos, direction, include=[Solid], ignore=[], maxDistance=4096, maxSteps=10, minSteps=10) {
+function traceRay(pos, direction, include=[OpaqueSolid], ignore=[], maxDistance=4096, maxSteps=10, minSteps=10) {
   const startPos = pos.copy();
   const middlePos = direction.copy().setMag(maxDistance).add(pos);
   const endPos = middlePos.copy();

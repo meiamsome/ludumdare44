@@ -63,7 +63,7 @@ class Gem {
     if (!this.level.player.dead) {
       const toPlayer = this.level.player.pos.copy().sub(this.pos);
       toPlayer.setMag(max(0, 200 - toPlayer.mag()) / 200);
-      this.vel.add(toPlayer);
+      this.vel.add(toPlayer.mult(3));
     }
   }
 

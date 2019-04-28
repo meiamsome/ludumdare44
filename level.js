@@ -1,7 +1,11 @@
+const playerSearchIncludes = [Solid];
+const playerSearchExcludes = [Player];
+
 class Level {
   constructor(levelName) {
     this.levelName = levelName;
     this.entities = [];
+    this.raysPerFrame = 0;
     this.gemsCollected = 0;
     this.gemCollectionTimeout = null;
     this.highScore = +localStorage.getItem(`highscores.${this.levelName}`);
@@ -74,7 +78,9 @@ class Level {
     }
     this.gemCollectionTimeout = null;
     this.gemsCollected = 0;
+    this.startTime = Date.now();
     this.endTime = Date.now() + 60 * 1000;
+    this.startFrame = frameCount;
   }
 
   collectGem(gem) {
@@ -93,6 +99,29 @@ class Level {
   draw() {
     for (const entity of this.entities) {
       entity.draw();
+    }
+    // this.player.draw();
+
+    const {
+      rays,
+      seen,
+    } = adaptiveTrace(this.player.pos, 0, TWO_PI, playerSearchIncludes, playerSearchExcludes);
+
+    drawingContext.globalCompositeOperation = "destination-in";
+    // drawingContext.filter = 'blur(4px)';
+    noStroke()
+    fill(255);
+    beginShape();
+    for (const { position } of rays) {
+      vertex(position.x, position.y);
+    }
+    endShape();
+    drawingContext.filter = 'none';
+    blendMode(BLEND);
+    this.raysPerFrame = rays.length;
+
+    for (const visible of seen.values()) {
+      visible.draw();
     }
   }
 

@@ -29,10 +29,10 @@ class UI {
         playerHere |= entity.playerHere;
         readyToLeave |= entity.readyToLeave;
       }
+      textSize(32);
+      stroke(0);
+      fill(255);
       if (playerHere) {
-        textSize(32);
-        stroke(0);
-        fill(255);
         textAlign(CENTER, TOP);
         if(readyToLeave) {
           text("Press E to Leave", width/2, 100)
@@ -40,6 +40,9 @@ class UI {
           text("Defeat All Enemies To Continue", width/2, 100)
         }
       }
+      textAlign(LEFT, TOP);
+      let fps = 1000 * (frameCount - level.startFrame) / (Date.now() - level.startTime);
+      text(`${nf(fps, 2, 2)}fps, ${nf(level.raysPerFrame, 2)}rpf`, 0, 0);
     }
   }
 }

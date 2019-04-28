@@ -17,12 +17,12 @@ class Projectile extends Solid {
     }
     if (this.hasCollided) return;
     this.previousPositions.push(this.pos.copy());
-    const smallVel = this.vel.copy().mult(1 / Projectile.velInterpolation);
-    for (var i = 0; i < Projectile.velInterpolation; i++) {
-      this.pos.add(smallVel);
-
-      this.level.checkCollisions(this);
-      if (this.hasCollided) return;
+    const result = traceRay(this.pos, this.vel, [Solid], [], this.vel.mag());
+    if (result) {
+      const { distance } = result;
+      this.pos.add(this.vel.copy().setMag(distance + 0.01));
+    } else {
+      this.pos.add(this.vel);
     }
   }
 

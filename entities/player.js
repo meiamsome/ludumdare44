@@ -48,7 +48,6 @@ class Player extends Solid {
       console.log("We're in a wall")
       return collisionResults.MOVE_OUT;
     }
-    console.log('Player collision');
   }
 
   onMoveOut(movement) {

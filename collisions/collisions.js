@@ -92,6 +92,14 @@ class CollisionMask {
 CollisionMask.NONE = class{};
 CollisionMask.NONE.NAME = "NONE";
 
+CollisionMask.LINE = class {
+  constructor(start, end) {
+    this.start = start;
+    this.end = end;
+  }
+}
+CollisionMask.LINE.NAME = "LINE";
+
 CollisionMask.CIRCLE = class {
   constructor(pos, radius) {
     this.pos = pos;
@@ -112,11 +120,76 @@ CollisionMask.RECTANGLE.NAME = "RECTANGLE";
 
 const CollisionChecks = {};
 
+function assert(val) {
+  if (!val) {
+    throw new Error('Assertion failed');
+  }
+}
+
+CollisionChecks[CollisionMask.LINE.NAME] = {
+  [CollisionMask.LINE.NAME]: (left, right) => {
+    const {
+      start: { x: x1, y: y1 },
+      end: { x: x2, y: y2 },
+    } = left;
+    const {
+      start: { x: x3, y: y3 },
+      end: { x: x4, y: y4 },
+    } = right;
+    const denominator = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+    if (abs(denominator) < 0.01) return;
+    const tNumerator = (x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4);
+    if (tNumerator < 0 || tNumerator > denominator) return;
+    const uNumerator = - ((x1 - x2) * (y1 - y3) - (y1 - y2) * (x1 - x3));
+    if (uNumerator < 0 || uNumerator > denominator) return;
+    return {
+      // TODO
+    };
+  },
+  [CollisionMask.CIRCLE.NAME]: (line, circle) => {
+    const { start, end } = line;
+    const { pos, radius } = circle;
+    let lineVector = end.copy().sub(start);
+    let maxLength = lineVector.mag();
+    let targetLength = lineVector.normalize().dot(pos.copy().sub(start));
+    targetLength = constrain(targetLength, 0, maxLength);
+    lineVector.setMag(targetLength).add(start).sub(pos);
+    if (lineVector.magSq() < radius * radius) {
+      return {
+        // TODO
+      }
+    };
+  },
+  [CollisionMask.RECTANGLE.NAME]: (line, rectangle) => {
+    const { top, left, bottom, right } = rectangle;
+    return CollisionChecks[CollisionMask.LINE.NAME][CollisionMask.LINE.NAME](line, {
+        start: { x: left, y: top },
+        end: { x: left, y: bottom },
+      }) ||
+      CollisionChecks[CollisionMask.LINE.NAME][CollisionMask.LINE.NAME](line, {
+        start: { x: left, y: bottom },
+        end: { x: right, y: bottom },
+      }) ||
+      CollisionChecks[CollisionMask.LINE.NAME][CollisionMask.LINE.NAME](line, {
+        start: { x: right, y: bottom },
+        end: { x: right, y: top },
+      }) ||
+      CollisionChecks[CollisionMask.LINE.NAME][CollisionMask.LINE.NAME](line, {
+        start: { x: right, y: top },
+        end: { x: left, y: top },
+      });
+  },
+};
+
 CollisionChecks[CollisionMask.CIRCLE.NAME] = {
   [CollisionMask.CIRCLE.NAME]: (left, right) => {
-    const lToR = left.pos.copy().sub(right.pos);
-    if (lToR.magSq() <= (left.radius + right.radius) * (left.radius + right.radius)) {
-      const resolutionVector = lToR.copy().setMag(left.radius + right.radius - lToR.mag());
+    let radius = left.radius + right.radius;
+    let xOff = left.pos.x - right.pos.x;
+    let yOff = left.pos.y - right.pos.y;
+    let magSq = yOff * yOff + xOff * xOff;
+    if (magSq <= radius * radius) {
+      let scale = Math.sqrt((radius * radius - magSq) / magSq);
+      const resolutionVector = createVector(xOff * scale, yOff * scale);
       return {
         moveLeft: resolutionVector,
         moveRight: resolutionVector.copy().mult(-1),

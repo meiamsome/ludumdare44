@@ -21,7 +21,7 @@ function moveToLevel(_level) {
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  background(0);
+  background(51);
   ellipseMode(CENTER);
 
   screen = new StartScreen();

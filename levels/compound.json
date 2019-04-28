@@ -20,13 +20,6 @@
     },
     {
       "mode": "lookAround",
-      "x": 300,
-      "y": 300,
-      "facing": 45,
-      "angleDelta": 45
-    },
-    {
-      "mode": "lookAround",
       "x": 700,
       "y": 300,
       "facing": 135,
@@ -37,13 +30,6 @@
       "x": 300,
       "y": 700,
       "facing": 315,
-      "angleDelta": 45
-    },
-    {
-      "mode": "lookAround",
-      "x": 700,
-      "y": 700,
-      "facing": 225,
       "angleDelta": 45
     }
   ],

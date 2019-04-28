@@ -9,6 +9,7 @@ class Player extends OpaqueSolid {
     this.collisionMask = new CollisionMask(CollisionMask.CIRCLE, this.pos, 16);
     this.deathDirection = createVector(0, 0);
     this.hits = 0;
+    this.seenByCount = 0;
   }
 
   update(deltaT) {

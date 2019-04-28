@@ -26,7 +26,7 @@ class LevelCompleteScreen {
     ];
     if (!this.highScore) {
     } else if(this.highScore < this.timeRemaining) {
-      strings.push(`New high score!\nYour previous high score was ${this.highScore}ms`);
+      strings.push(`New high score!`, `Your previous high score was ${this.highScore}ms`);
     } else {
       strings.push(`Your high score is ${this.highScore}ms`);
     }
@@ -36,6 +36,14 @@ class LevelCompleteScreen {
         strings.push(`PERFECT: You took no damage`);
       } else {
         strings.push(`You took ${level.player.hits} hit${level.player.hits > 1 ? 's' : ''}`);
+      }
+
+      if (level.player.seenByCount === 0) {
+        strings.push(`PERFECT: You were unseen`);
+      } else if (level.player.seenByCount === 1) {
+        strings.push(`One guard saw you`);
+      } else {
+        strings.push(`${level.player.seenByCount} guards saw you`);
       }
     }
     text(strings.join(`\n`), 0, 0);

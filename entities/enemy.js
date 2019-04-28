@@ -166,6 +166,9 @@ class Enemy extends OpaqueSolid {
     this.rays = rays;
     let seesPlayer = seen.has(level.player);
     if (seesPlayer) {
+      if (!this.lastSawPlayerAt) {
+        this.level.player.seenByCount ++;
+      }
       this.alert = true;
       this.lastSawPlayerAt = level.player.pos.copy();
     }

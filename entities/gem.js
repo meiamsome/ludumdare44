@@ -39,7 +39,7 @@ class Gem {
   update(deltaT) {
     // this.pos.add(this.vel);
     let mag = this.vel.mag() * deltaT / 1000;
-    while (mag > 0.1) {
+    for (let i = 0; i < 10 && mag > 0.1; i++) {
       const result = traceRay(this.pos, this.vel, gemCollisionIncludes, this.isPlayer ? playerGemCollisionExcludes : gemCollisionExcludes, mag);
       if (result) {
         const { distance, closest } = result;

@@ -64,12 +64,12 @@ class Player extends OpaqueSolid {
       return collisionResults.MOVE_OUT;
     }
     if (entity instanceof Projectile) {
-      if (entity.sourceEntityClass !== Player) {
-        this.deathDirection = entity.vel.copy();
-        this.score = this.level.endTime - Date.now();
-        this.level.endTime -= 100000;
-        this.dead = true;
-        return collisionResults.DESTROY;
+      if (entity.sourceEntityClass !== Player && entity.hasCollided === false) {
+        entity.hasCollided = true;
+        console.log('Player is HIT');
+        if (this.getHit(entity.vel.copy())) {
+          return collisionResults.DESTROY;
+        }
       }
     }
   }
@@ -78,8 +78,10 @@ class Player extends OpaqueSolid {
     this.moveOutVector.add(movement);
   }
 
-  onDestroy() {
-    let count = this.score / 100;
+  getHit(deathDirection) {
+    let damage = min(10000, this.level.endTime - Date.now());
+    this.level.endTime -= damage;
+    let count = damage / 100;
     while (count >= 1) {
       let value = random([1, 1, 1, 1, 2, 2, 5]);
       if (value > count) continue;
@@ -90,9 +92,15 @@ class Player extends OpaqueSolid {
         this.pos.copy(),
         p5.Vector.random2D()
           .setMag(random(180, 300))
-          .add(this.deathDirection),
-        random(0.5, 0.9)
+          .add(deathDirection),
+        random(0.5, 0.9),
+        true,
       ))
     }
+    return this.level.endTime <= 0;
+  }
+
+  onDestroy() {
+    this.dead = true;
   }
 }

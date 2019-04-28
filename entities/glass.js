@@ -10,7 +10,7 @@ class Glass extends TransparentSolid {
   }
 
   draw() {
-    strokeWeight(5);
+    strokeWeight(4);
     stroke(255);
     fill(255, 0.3);
     rect(this.left + 3, this.top + 3, this.right - this.left - 6, this.bottom - this.top - 6);

@@ -50,17 +50,27 @@ function draw() {
     duration = now - last;
   }
   last = Date.now();
-  background(32);
   if (screen) {
+    background(32);
     return scaleAndRenderScreen(screen);
   }
   getInput();
 
-  level && level.update(duration);
-  ui.update();
+  if (level) {
+    const offset = createVector(width / 2, height / 2).sub(level.offset);
+    input.mouse.sub(offset);
+    level && level.update(duration);
+    ui.update();
+    input.mouse.add(offset);
+  }
 
 
-  level && level.draw();
+  // level && level.draw();
+  resetMatrix();
+  background(32);
+  translate(width / 2, height / 2);
+  level.draw();
+  resetMatrix();
   ui.draw();
 }
 
@@ -103,5 +113,8 @@ function mousePressed() {
   if (screen) {
     return screen.onClick && screen.onClick();
   }
+  const offset = createVector(width / 2, height / 2).sub(level.offset);
+  input.mouse.sub(offset);
   level && level.onClick();
+  input.mouse.add(offset);
 }

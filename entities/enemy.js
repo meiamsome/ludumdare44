@@ -85,6 +85,7 @@ const EnemyPassiveBehaviourPatrol = points => function* (enemy) {
 }
 
 const EPBAttack = () => function* (enemy) {
+  yield* EPBWait(enemy, 500);
   let lookAt = EPBLookAt(enemy, enemy.lastSawPlayerAt);
   while (true) {
     let delay = EPBWait(enemy, 500);

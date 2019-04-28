@@ -11,9 +11,12 @@ class UIGemDisplay {
   }
 
   draw() {
+    push();
+    translate(width / 2 -level.offset.x, height / 2 -level.offset.y);
     stroke(0, this.alpha * 255);
     fill(255, this.alpha * 255);
     textAlign(CENTER, CENTER);
     text(`+${this.value}ms`, this.pos.x, this.pos.y);
+    pop();
   }
 }

@@ -8,13 +8,14 @@ const wallTypes = {
 
 class Level {
   constructor(levelName) {
-    // this.debug = true;
+    this.debug = false;
     this.levelName = levelName;
     this.entities = [];
     this.raysPerFrame = 0;
     this.gemsCollected = 0;
     this.gemCollectionTimeout = null;
     this.highScore = +localStorage.getItem(`highscores.${this.levelName}`);
+    this.offset = createVector(0, 0);
     return this._loadLevel(levelName);
   }
 
@@ -29,10 +30,10 @@ class Level {
     this.height = this.data.height;
     randomSeed(this.data.randomSeed);
     this.entities = [];
-    this.addEntity(new Wall(-16, -16, -1, this.width + 16));
-    this.addEntity(new Wall(-16, -16, this.height + 16, -1));
-    this.addEntity(new Wall(-16, this.width + 1, this.height + 16, this.width + 16));
-    this.addEntity(new Wall(this.height + 1, -16, this.height + 16, this.width + 16));
+    this.addEntity(new Wall(-16, -16, 10, this.width + 16));
+    this.addEntity(new Wall(-16, -16, this.height + 16, 10));
+    this.addEntity(new Wall(-16, this.width - 10, this.height + 16, this.width + 16));
+    this.addEntity(new Wall(this.height - 10, -16, this.height + 16, this.width + 16));
 
     for (const { type, top, left, bottom, right } of this.data.walls) {
       const Type = wallTypes[type] || Wall;
@@ -77,6 +78,7 @@ class Level {
     }
 
     this.player = new Player(this, this.data.player.x, this.data.player.y);
+    this.offset.set(this.player.pos);
     this.addEntity(this.player);
 
     return this;
@@ -114,6 +116,11 @@ class Level {
       }
     }
     checkAllCollisions(this.entities);
+    let maxRadius = min(width, height) / 16;
+    const playerOffset = this.player.pos.copy().sub(this.offset);
+    if (playerOffset.magSq() > maxRadius ** 2) {
+      this.offset.add(playerOffset.setMag(playerOffset.mag() - maxRadius).mult(duration / 1000));
+    }
   }
 
   begin() {
@@ -141,6 +148,7 @@ class Level {
   }
 
   draw() {
+    translate(-this.offset.x, -this.offset.y);
     for (const entity of this.entities) {
       entity.draw();
     }
@@ -176,6 +184,11 @@ class Level {
     }
     for (const visible of seen.values()) {
       visible.draw();
+    }
+    for (const entity of this.entities) {
+      if (entity instanceof Gem && entity.isPlayer) {
+        entity.draw();
+      }
     }
     this.player.draw();
   }

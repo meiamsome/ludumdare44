@@ -9,9 +9,11 @@ class LevelCompleteScreen {
   draw() {
     push();
     resetMatrix();
+    translate(width / 2, height / 2);
     level.draw();
+    resetMatrix();
     fill(0, 0, 0, 100);
-    rect(0, 0, width, height);
+    rect(-width, -height, 2 * width, 2 * height);
     pop();
     textAlign(CENTER, CENTER);
     fill(255);

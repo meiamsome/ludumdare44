@@ -3,6 +3,8 @@ class DeathScreen {
     this.width = 1920;
     this.height = 1080;
     this.lastUpdate = Date.now();
+    this.canContinue = false;
+    setTimeout(() => this.canContinue = true, 1000);
   }
 
   draw() {
@@ -12,9 +14,11 @@ class DeathScreen {
     level.update(deltaT);
     push();
     resetMatrix();
+    translate(width / 2, height / 2);
     level.draw();
+    resetMatrix();
     fill(0, 0, 0, 100);
-    rect(0, 0, width, height);
+    rect(-width, -height, 2 * width, 2 * height);
     pop();
     textAlign(CENTER, CENTER);
     fill(255);
@@ -22,7 +26,11 @@ class DeathScreen {
     textSize(120);
     text("GAME NAME HERE", 0, -400);
     textSize(32);
-    text("You DIED.", 0, 0);
+    if (this.canContinue) {
+      text("You DIED.\nClick to try again", 0, 0);
+    } else {
+      text("You DIED.", 0, 0);
+    }
   }
 
   onKeyPress() {
@@ -32,6 +40,8 @@ class DeathScreen {
   }
 
   onClick() {
-    screen = new StartScreen('test');
+    if (this.canContinue) {
+      screen = new StartScreen('test');
+    }
   }
 }

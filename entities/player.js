@@ -2,6 +2,7 @@ class Player extends OpaqueSolid {
   constructor (level, x, y) {
     super();
     this.level = level;
+    this.dead = false;
     this.pos = createVector(x, y);
     this.moveOutVector = createVector(0, 0);
     this.mouseAngle = 0;
@@ -57,12 +58,16 @@ class Player extends OpaqueSolid {
 
   onCollide(entity) {
     if (entity instanceof Wall || entity instanceof Glass) {
-      console.log("We're in a wall")
+      console.log("We're in a wall");
       return collisionResults.MOVE_OUT;
     }
     if (entity instanceof Projectile) {
       if (entity.sourceEntityClass !== Player) {
+        this.deathDirection = entity.vel.copy();
+        this.score = this.level.endTime - Date.now();
         this.level.endTime -= 100000;
+        this.dead = true;
+        return collisionResults.DESTROY;
       }
     }
   }
@@ -72,6 +77,20 @@ class Player extends OpaqueSolid {
   }
 
   onDestroy() {
-
+    let count = this.score / 100;
+    while (count >= 1) {
+      let value = random([1, 1, 1, 1, 2, 2, 5]);
+      if (value > count) continue;
+      count -= value;
+      this.level.addEntity(new Gem(
+        this.level,
+        value,
+        this.pos.copy(),
+        p5.Vector.random2D()
+          .setMag(random(3, 5))
+          .add(this.deathDirection),
+        random(0.5, 0.9)
+      ))
+    }
   }
 }

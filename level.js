@@ -42,8 +42,37 @@ class Level {
       this.addEntity(new EndZone(this, top, left, bottom, right));
     }
 
-    for (const { x, y } of this.data.enemies) {
-      this.addEntity(new Enemy(this, x, y));
+    this.patrols = [];
+    if (this.data.patrols) {
+      this.patrols = this.data.patrols.map(
+        patrol => patrol.map(
+          ({ x, y }) => ({ position: createVector(x, y) })
+        )
+      );
+    }
+
+    for (const { mode, patrolId, startAt, _facing, _x, _y } of this.data.enemies) {
+      let x = _x;
+      let y = _y;
+      let facing = _facing;
+      let passiveBehaviour = EnemyPassiveBehaviourStandAndLook()
+      if (mode === "patrol") {
+        const patrol = this.patrols[patrolId].slice();
+        if (startAt) {
+          patrol.push(...patrol.splice(0, startAt));
+        }
+        passiveBehaviour = EnemyPassiveBehaviourPatrol(patrol);
+        if (!x || !y) {
+          ({ x, y } = patrol[0].position);
+          if (!facing) {
+            facing = patrol[1 % patrol.length].position.copy().sub(patrol[0].position).heading();
+          }
+        } else if (!facing) {
+          facing = createVector(x, y).copy().sub(patrol[0].position).heading();
+        }
+      }
+      let pos = createVector(x, y);
+      this.addEntity(new Enemy(this, pos, facing, passiveBehaviour));
     }
 
     this.player = new Player(this, this.data.player.x, this.data.player.y);
@@ -68,7 +97,7 @@ class Level {
   }
 
   update() {
-    if (this.endTime < Date.now()) {
+    if (this.endTime < Date.now() && !(screen instanceof DeathScreen)) {
       screen = new DeathScreen();
       return;
     }
@@ -108,16 +137,22 @@ class Level {
     }
     // this.player.draw();
 
+    const angle = PI * 114 /360;
+
     const {
       rays,
       seen,
-    } = adaptiveTrace(this.player.pos, 0, TWO_PI, playerSearchIncludes, playerSearchExcludes);
+    } = adaptiveTrace(this.player.pos, this.player.mouseAngle - angle, this.player.mouseAngle + angle, playerSearchIncludes, playerSearchExcludes);
+
+    // return;
+    if (this.player.dead) return;
 
     drawingContext.globalCompositeOperation = "destination-in";
     // drawingContext.filter = 'blur(4px)';
     noStroke()
     fill(255);
     beginShape();
+    vertex(this.player.pos.x, this.player.pos.y);
     for (const { position } of rays) {
       vertex(position.x, position.y);
     }
@@ -127,13 +162,14 @@ class Level {
     this.raysPerFrame = rays.length;
 
     for (const entity of this.entities) {
-      if ([Wall, Glass, EndZone].some(clss => entity instanceof clss)) {
+      if ([Wall, Glass].some(clss => entity instanceof clss)) {
         entity.draw();
       }
     }
     for (const visible of seen.values()) {
       visible.draw();
     }
+    this.player.draw();
   }
 
   finish() {

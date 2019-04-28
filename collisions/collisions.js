@@ -36,7 +36,7 @@ function checkCollisions(entities, entity) {
   }
   if (result === collisionResults.DESTROY) {
     entity.onDestroy && entity.onDestroy();
-    removeEntity(entity);
+    level.removeEntity(entity);
     return collisionResults.DESTROY;
   }
   return {
@@ -214,31 +214,36 @@ CollisionChecks[CollisionMask.CIRCLE.NAME] = {
   [CollisionMask.RECTANGLE.NAME]: (leftEntity, rightEntity) => {
     const { pos: { x, y }, radius } = leftEntity;
     const { top, left, bottom, right } = rightEntity;
+    if (x < left - radius || y < top - radius || x > right + radius || y > bottom + radius) {
+      return;
+    }
+    let potentialMove = null;
     if (y > top && y < bottom && x > left - radius && x < right + radius) {
       if (2 * x < left + right) {
-        return {
-          moveLeft: createVector(left - radius - x, 0),
-          moveRight: createVector(x - left + radius, 0),
-        };
+        potentialMove = left - radius - x;
       } else {
-        return {
-          moveLeft: createVector(right + radius - x, 0),
-          moveRight: createVector(x - right - radius, 0),
-        };
+        potentialMove =  right + radius - x;
       }
     }
     if (x > left && x < right && y > top - radius && y < bottom + radius) {
+      let newPotentialMove;
       if (2 * y < top + bottom) {
-        return {
-          moveLeft: createVector(0, top - radius - y),
-          moveRight: createVector(0, y - top + radius),
-        };
+        newPotentialMove = top - radius - y;
       } else {
+        newPotentialMove = bottom + radius - y;
+      }
+      if (!potentialMove || abs(newPotentialMove) < abs(potentialMove)) {
         return {
-          moveLeft: createVector(0, bottom + radius - y),
-          moveRight: createVector(0, y - bottom - radius),
+          moveLeft: createVector(0, newPotentialMove),
+          moveRight: createVector(0, -newPotentialMove),
         };
       }
+    }
+    if (potentialMove) {
+      return {
+        moveLeft: createVector(potentialMove, 0),
+        moveRight: createVector(-potentialMove, 0),
+      };
     }
     return (
       CollisionChecks[CollisionMask.CIRCLE.NAME][CollisionMask.CIRCLE.NAME](leftEntity, {

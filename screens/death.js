@@ -5,6 +5,7 @@ class DeathScreen {
   }
 
   draw() {
+    level.update();
     push();
     resetMatrix();
     level.draw();
@@ -24,5 +25,9 @@ class DeathScreen {
     if (keyCode === ESCAPE) {
       screen = null;
     }
+  }
+
+  onClick() {
+    screen = new StartScreen('test');
   }
 }

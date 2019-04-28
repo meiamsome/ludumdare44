@@ -1,5 +1,8 @@
 function _checkMatchFunction(clss, entity) {
-  return entity instanceof clss;
+  try {
+    if (entity instanceof clss) return true;
+  } catch(e) {}
+  return entity === clss;
 }
 
 let memoizeHits = 0;

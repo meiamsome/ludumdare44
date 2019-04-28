@@ -8,6 +8,7 @@ class Player extends OpaqueSolid {
     this.mouseAngle = 0;
     this.collisionMask = new CollisionMask(CollisionMask.CIRCLE, this.pos, 16);
     this.deathDirection = createVector(0, 0);
+    this.hits = 0;
   }
 
   update(deltaT) {
@@ -79,6 +80,7 @@ class Player extends OpaqueSolid {
   }
 
   getHit(deathDirection) {
+    this.hits += 1;
     let damage = min(10000, this.level.endTime - Date.now());
     this.level.endTime -= damage;
     let count = damage / 100;

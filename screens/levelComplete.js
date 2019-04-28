@@ -21,13 +21,24 @@ class LevelCompleteScreen {
     textSize(120);
     text("GAME NAME HERE", 0, -400);
     textSize(32);
+    let strings = [
+      `You survived with ${this.timeRemaining}ms remaining.`
+    ];
     if (!this.highScore) {
-      text(`You survived with ${this.timeRemaining}ms remaining.`, 0, 0);
     } else if(this.highScore < this.timeRemaining) {
-      text(`You survived with ${this.timeRemaining}ms remaining.\nNew high score!\nYour previous high score was ${this.highScore}ms`, 0, 0);
+      strings.push(`New high score!\nYour previous high score was ${this.highScore}ms`);
     } else {
-      text(`You survived with ${this.timeRemaining}ms remaining.\nYour high score is ${this.highScore}ms`, 0, 0);
+      strings.push(`Your high score is ${this.highScore}ms`);
     }
+
+    if (level.player) {
+      if (level.player.hits === 0) {
+        strings.push(`PERFECT: You took no damage`);
+      } else {
+        strings.push(`You took ${level.player.hits} hit${level.player.hits > 1 ? 's' : ''}`);
+      }
+    }
+    text(strings.join(`\n`), 0, 0);
   }
 
   onClick() {
